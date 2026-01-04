@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+  <meta charset="UTF-8">
+  <title>Rebel Mode | Ajoute Vant</title>
+  <style>
+    body { font-family:Poppins,sans-serif; background:#0f0f0f; color:#fff; margin:0; padding:0; }
+    header { background:#1e1e1e; padding:20px 40px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 10px rgba(255,255,255,0.1);}
+    header h1 { color:#ffcc00; }
+    main { padding:40px; max-width:600px; margin:auto; }
+    form { display:grid; gap:10px; background:#1a1a1a; padding:20px; border-radius:10px; }
+    input, select, button { padding:10px; border:none; border-radius:6px; font-size:15px; outline:none; }
+    button { background:#ffcc00; color:#000; font-weight:bold; cursor:pointer; }
+    button:hover { background:#ffdd33; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ajoute Vant</h1>
+    <button onclick="location.href='sales.html'">Retounen Lis Vant</button>
+  </header>
+  <main>
+    <form id="salesForm">
+      <select id="productSelect" required>
+        <option value="">Chwazi pwodwi</option>
+      </select>
+      <input type="number" id="quantity" placeholder="Kantite" min="1" required>
+      <input type="text" id="clientName" placeholder="Non kliyan" required>
+      <button type="submit">Ajoute Vant</button>
+    </form>
+  </main>
+
+  <script>
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    const sales = JSON.parse(localStorage.getItem('sales') || '[]');
+    const productSelect = document.getElementById('productSelect');
+
+    // Chaje pwodwi nan select
+    products.forEach((p,i) => {
+      if(p.stock > 0) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${p.name} (${p.category}) - ${p.price} Gdes - Stock: ${p.stock}`;
+        productSelect.appendChild(opt);
+      }
+    });
+
+    const form = document.getElementById('salesForm');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const index = parseInt(productSelect.value);
+      const qty = parseInt(document.getElementById('quantity').value);
+      const client = document.getElementById('clientName').value;
+      if(qty > products[index].stock){
+        alert('Pa gen ase stock!');
+        return;
+      }
+      products[index].stock -= qty;
+      localStorage.setItem('products', JSON.stringify(products));
+      sales.push({
+        client,
+        product: products[index].name,
+        category: products[index].category,
+        price: products[index].price,
+        quantity: qty,
+        total: products[index].price * qty
+      });
+      localStorage.setItem('sales', JSON.stringify(sales));
+      alert('Vant anrejistre!');
+      form.reset();
+      location.href = 'sales.html';
+    });
+  </script>
+</body>
+</html>

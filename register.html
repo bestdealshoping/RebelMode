@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+  <meta charset="UTF-8">
+  <title>Rebel Nation Mode | Enskri</title>
+  <style>
+    body { font-family: Poppins, sans-serif; background: #0f0f0f; color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .container { background: #1a1a1a; padding: 40px; border-radius: 15px; width: 100%; max-width: 450px; }
+    h2 { color: #ffcc00; text-align: center; margin-bottom: 30px; }
+    input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; outline: none; background: #252525; color: #fff; font-size: 15px; }
+    button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #ffcc00; color: #000; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; }
+    button:hover { background: #ffdd33; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Enskri itilizatè</h2>
+    <form id="registerForm">
+      <input type="text" id="fullName" placeholder="Non konplè" required>
+      <input type="text" id="phone" placeholder="Nimewo telefòn" required>
+      <input type="text" id="address" placeholder="Adrès" required>
+      <select id="role" required>
+        <option value="">Chwazi okipasyon</option>
+        <option value="PDG">PDG</option>
+        <option value="Vendeur">Vendeur</option>
+        <option value="Responsable Stockage">Responsable Stockage</option>
+      </select>
+      <input type="text" id="accessCode" placeholder="Kòd aksè wòl" required>
+      <input type="password" id="password" placeholder="Modpas" required>
+      <button type="submit">Enskri</button>
+    </form>
+  </div>
+
+  <script>
+    const accessCodes = {
+      "PDG": "PDG123",
+      "Vendeur": "VEN456",
+      "Responsable Stockage": "STK789"
+    };
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    document.getElementById("registerForm").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const role = document.getElementById("role").value;
+      const accessCode = document.getElementById("accessCode").value;
+      const password = document.getElementById("password").value;
+
+      // Verify kòd aksè
+      if(accessCodes[role] !== accessCode){
+        alert("Kòd aksè pa kòrèk pou wòl sa!");
+        return;
+      }
+
+      // Verify si itilizatè deja egziste
+      if(users.some(u => u.fullName === fullName)){
+        alert("Itilizatè deja egziste!");
+        return;
+      }
+
+      const newUser = { fullName, phone, address, role, password };
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      alert("Itilizatè anrejistre avèk siksè!");
+      window.location.href = "index.html"; // Redireksyon login
+    });
+  </script>
+</body>
+</html>

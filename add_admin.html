@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<title>Ajouter / Modifier Admin | Dashboard</title>
+<style>
+  body { margin:0; font-family:Poppins,sans-serif; background:#0f0f0f; color:#fff; }
+  header { background:#1e1e1e; height:60px; display:flex; align-items:center; padding:0 20px; box-shadow:0 2px 10px rgba(255,255,255,0.1);}
+  header h1 { font-size:22px; color:#ffcc00; margin:0; }
+  main { padding:20px; max-width:600px; margin:auto; }
+  form { display:grid; gap:10px; background:#1a1a1a; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.4);}
+  input, select { padding:10px; border:none; border-radius:6px; outline:none; font-size:15px; }
+  button[type="submit"] { background:#ffcc00; color:#000; padding:10px; font-weight:bold; border:none; border-radius:6px; cursor:pointer; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Ajouter / Modifier Admin</h1>
+</header>
+<main>
+  <form id="adminForm">
+    <input type="hidden" id="adminId">
+    <input type="text" id="fullName" placeholder="Nom complet" required>
+    <input type="text" id="phone" placeholder="Numéro téléphone" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="text" id="address" placeholder="Adresse" required>
+    <select id="role" required>
+      <option value="">Sélectionnez rôle</option>
+      <option value="PDG">PDG</option>
+      <option value="Vendeur">Vendeur</option>
+      <option value="Responsable Stockage">Responsable Stockage</option>
+    </select>
+    <input type="password" id="accessCode" placeholder="Code d'accès" required>
+    <button type="submit" id="submitBtn">Ajouter Admin</button>
+  </form>
+</main>
+
+<script>
+  const form = document.getElementById("adminForm");
+  const submitBtn = document.getElementById("submitBtn");
+
+  // Si nou ap modifye
+  const editIndex = localStorage.getItem("editAdminIndex");
+  if(editIndex !== null){
+    const admins = JSON.parse(localStorage.getItem("admins")) || [];
+    const adm = admins[editIndex];
+    document.getElementById("adminId").value = editIndex;
+    document.getElementById("fullName").value = adm.fullName;
+    document.getElementById("phone").value = adm.phone;
+    document.getElementById("email").value = adm.email;
+    document.getElementById("address").value = adm.address;
+    document.getElementById("role").value = adm.role;
+    document.getElementById("accessCode").value = adm.accessCode;
+    submitBtn.textContent = "Modifier Admin";
+    localStorage.removeItem("editAdminIndex");
+  }
+
+  form.addEventListener("submit", e=>{
+    e.preventDefault();
+    const admins = JSON.parse(localStorage.getItem("admins")) || [];
+    const adminData = {
+      fullName: document.getElementById("fullName").value,
+      phone: document.getElementById("phone").value,
+      email: document.getElementById("email").value,
+      address: document.getElementById("address").value,
+      role: document.getElementById("role").value,
+      accessCode: document.getElementById("accessCode").value
+    };
+    const id = document.getElementById("adminId").value;
+    if(id){
+      admins[id] = adminData;
+      alert("Admin modifié avec succès !");
+    }else{
+      admins.push(adminData);
+      alert("Nouvel admin ajouté !");
+    }
+    localStorage.setItem("admins", JSON.stringify(admins));
+    window.location.href = "parametres.html";
+  });
+</script>
+</body>
+</html>

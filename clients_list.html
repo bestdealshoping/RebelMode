@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<title>Rebel Mode | Lis Clients</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+body{font-family:Poppins,sans-serif;background:#0f0f0f;color:#fff;margin:0}
+header{background:#1e1e1e;padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
+h1{color:#ffcc00}
+main{padding:40px;max-width:1100px;margin:auto}
+.top-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+button{padding:10px 18px;border:none;border-radius:6px;background:#ffcc00;font-weight:bold;cursor:pointer}
+button:hover{background:#ffdd33}
+table{width:100%;border-collapse:collapse;background:#1a1a1a}
+th,td{padding:12px;border-bottom:1px solid #333;text-align:left}
+th{background:#252525;color:#ffcc00}
+.action{background:crimson;color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold}
+</style>
+</head>
+<body>
+<header>
+  <h1>👥 Lis Clients | Rebel Mode</h1>
+</header>
+<main>
+<div class="top-bar">
+  <button onclick="location.href='clients_add.html'">➕ Nouvo Client</button>
+  <button onclick="exportPDF()">📄 Exporter PDF</button>
+  <button onclick="location.href='dashboard.html'">⬅️ Dashboard</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Nom</th>
+<th>Téléphone</th>
+<th>Email</th>
+<th>Adresse</th>
+<th>Aksyon</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+</main>
+
+<script>
+const STORAGE_KEY="clients_stock";
+const list=document.getElementById("list");
+
+function getClients(){return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}
+function saveClients(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
+
+function loadClients(){
+  const clients=getClients();
+  list.innerHTML="";
+  clients.forEach((c,i)=>{
+    list.innerHTML+=`
+    <tr>
+      <td>${c.nom}</td>
+      <td>${c.telephone}</td>
+      <td>${c.email||"-"}</td>
+      <td>${c.adresse||"-"}</td>
+      <td><button class="action" onclick="deleteClient(${i})">Efase</button></td>
+    </tr>`;
+  });
+}
+
+function deleteClient(i){
+  if(!confirm("Efase client sa ?")) return;
+  const clients=getClients();
+  clients.splice(i,1);
+  saveClients(clients);
+  loadClients();
+}
+
+function exportPDF(){
+  const clients=getClients();
+  if(clients.length===0){alert("Pa gen client");return;}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  doc.setFontSize(18);
+  doc.text("Rebel Mode - Lis Clients",14,20);
+  doc.setFontSize(11);
+  doc.text("Date : "+new Date().toLocaleDateString(),14,28);
+  let y=40;
+  doc.text("No",14,y);
+  doc.text("Nom",25,y);
+  doc.text("Téléphone",90,y);
+  y+=6;
+  doc.line(14,y,195,y);
+  clients.forEach((c,i)=>{
+    y+=8;
+    if(y>280){doc.addPage();y=20;}
+    doc.text(String(i+1),14,y);
+    doc.text(c.nom,25,y);
+    doc.text(c.telephone,90,y);
+  });
+  doc.save("clients_rebel_mode.pdf");
+}
+
+loadClients();
+</script>
+</body>
+</html>

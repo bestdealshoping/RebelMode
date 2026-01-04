@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<title>Ajoute / Modifye Pwodwi | Rebel Mode</title>
+<style>
+body { font-family: Poppins,sans-serif; background:#0f0f0f; color:#fff; margin:0; padding:0;}
+main { max-width:900px; margin:auto; padding:30px;}
+h1 { color:#ffcc00; text-align:center; margin-bottom:20px;}
+form { display:grid; gap:10px; background:#1a1a1a; padding:20px; border-radius:10px;}
+input, textarea, select, button { padding:10px; border:none; border-radius:6px; outline:none; font-size:14px;}
+button { background:#ffcc00; color:#000; font-weight:bold; cursor:pointer;}
+button:hover { background:#ffdd33;}
+</style>
+</head>
+<body>
+<main>
+<h1>Ajoute / Modifye Pwodwi</h1>
+<form id="productForm">
+  <input type="hidden" id="productId">
+  <input type="text" id="nom" placeholder="Non pwodwi a" required>
+  <input type="number" id="prix" placeholder="Pri (Gdes)" required>
+  <input type="number" id="stock" placeholder="Kantite Stock" required>
+  <select id="categorie" required>
+    <option value="">Chwazi kategori</option>
+    <option value="Rad fi">Rad fi</option>
+    <option value="Rad gason">Rad gason</option>
+    <option value="Tenis fi">Tenis fi</option>
+    <option value="Tenis gason">Tenis gason</option>
+  </select>
+  <textarea id="description" placeholder="Ti deskripsyon pwodwi a" rows="3"></textarea>
+  <input type="text" id="image_url" placeholder="Lyen imaj pwodwi a (opsyonèl)">
+  <button type="submit" id="submitBtn">Ajoute Pwodwi</button>
+</form>
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const editId = urlParams.get('id');
+
+const form=document.getElementById("productForm");
+const submitBtn=document.getElementById("submitBtn");
+
+// Chaje done si modifye
+if(editId){
+  let produits=JSON.parse(localStorage.getItem("produits")||"[]");
+  const prod = produits.find(p=>p.id===parseInt(editId));
+  if(prod){
+    document.getElementById("productId").value = prod.id;
+    document.getElementById("nom").value = prod.nom;
+    document.getElementById("prix").value = prod.prix;
+    document.getElementById("stock").value = prod.stock;
+    document.getElementById("categorie").value = prod.categorie;
+    document.getElementById("description").value = prod.description;
+    document.getElementById("image_url").value = prod.image_url;
+    submitBtn.textContent="Mete ajou";
+  }
+}
+
+form.addEventListener("submit",function(e){
+  e.preventDefault();
+  let produits=JSON.parse(localStorage.getItem("produits")||"[]");
+  const id=document.getElementById("productId").value;
+  const produit={
+    id:id ? parseInt(id) : Date.now(),
+    nom:document.getElementById("nom").value,
+    prix:parseFloat(document.getElementById("prix").value),
+    stock:parseInt(document.getElementById("stock").value),
+    categorie:document.getElementById("categorie").value,
+    description:document.getElementById("description").value,
+    image_url:document.getElementById("image_url").value
+  };
+  if(id){
+    const index=produits.findIndex(p=>p.id===parseInt(id));
+    if(index!==-1) produits[index]=produit;
+  } else {
+    produits.push(produit);
+  }
+  localStorage.setItem("produits",JSON.stringify(produits));
+  alert("Pwodwi anrejistre avèk siksè!");
+  window.location.href="products.html";
+});
+</script>
+</main>
+</body>
+</html>

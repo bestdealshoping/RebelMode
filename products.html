@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<title>Products | Rebel Mode</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body { font-family:Poppins,sans-serif; background:#0f0f0f; color:#fff; margin:0; }
+main { max-width:1000px; margin:auto; padding:30px;}
+h1 { color:#ffcc00; text-align:center; }
+table { width:100%; border-collapse:collapse; background:#1a1a1a; border-radius:8px;}
+th,td { padding:12px; border-bottom:1px solid #333;}
+th { background:#252525; color:#ffcc00;}
+img { width:50px; height:50px; object-fit:cover;}
+button { padding:8px 14px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;}
+.edit-btn { background:#00b894; color:white;}
+.delete-btn { background:crimson; color:white;}
+.export-btn { background:gold; color:black; margin-left:10px;}
+.actions { margin-bottom:15px; text-align:right;}
+</style>
+</head>
+
+<body>
+<main>
+
+<h1>Lis Pwodwi</h1>
+
+<div class="actions">
+  <a href="add_product.html"><button>➕ Nouvo Pwodwi</button></a>
+  <button class="export-btn" onclick="exportPDF()">📄 Exporter PDF</button>
+  <button class="export-btn" onclick="exportJS()">🧠 Générer Shop</button>
+</div>
+
+<table>
+<thead>
+<tr>
+  <th>Imaj</th><th>Non</th><th>Kategori</th>
+  <th>Pri</th><th>Stock</th><th>Opsyon</th>
+</tr>
+</thead>
+<tbody id="productTable"></tbody>
+</table>
+
+</main>
+
+<script>
+function getProducts(){
+  return JSON.parse(localStorage.getItem("produits") || "[]");
+}
+
+function saveProducts(p){
+  localStorage.setItem("produits", JSON.stringify(p));
+}
+
+function loadProducts(){
+  const produits = getProducts();
+  const table = document.getElementById("productTable");
+  table.innerHTML="";
+
+  produits.forEach(prod=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td><img src="${prod.image_url || 'https://via.placeholder.com/50'}"></td>
+      <td>${prod.nom}</td>
+      <td>${prod.categorie}</td>
+      <td>${prod.prix} Gdes</td>
+      <td>${prod.stock || 0}</td>
+      <td>
+        <a href="add_product.html?id=${prod.id}">
+          <button class="edit-btn">Modifye</button>
+        </a>
+        <button class="delete-btn" onclick="deleteProduct(${prod.id})">Efase</button>
+      </td>
+    `;
+    table.appendChild(tr);
+  });
+}
+
+function deleteProduct(id){
+  if(!confirm("Efase pwodwi sa a ?")) return;
+  let p = getProducts().filter(x=>x.id!==id);
+  saveProducts(p);
+  loadProducts();
+}
+
+/* ===== EXPORT PDF ===== */
+function exportPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const produits = getProducts();
+
+  doc.text("Rebel Mode - Catalogue Produits", 10, 10);
+  let y = 20;
+
+  produits.forEach(p=>{
+    doc.text(
+      `${p.nom} | ${p.categorie} | ${p.prix} Gdes | Stock: ${p.stock||0}`,
+      10, y
+    );
+    y += 8;
+  });
+
+  doc.save("rebel_mode_products.pdf");
+}
+
+/* ===== EXPORT SHOP (products.js) ===== */
+function exportJS(){
+  const produits = getProducts();
+
+  const shopProducts = produits.map(p => ({
+    id: p.id,
+    name: p.nom,
+    price: p.prix,
+    image: p.image_url || "",
+    category: p.categorie
+  }));
+
+  const content =
+`const products = ${JSON.stringify(shopProducts, null, 2)};`;
+
+  const blob = new Blob([content], {type:"text/javascript"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "products.js";
+  a.click();
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>

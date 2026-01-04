@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard | Rebel Nation Mode</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    background: #0f0f0f;
+    color: #fff;
+  }
+  header {
+    background: #1e1e1e;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(255,255,255,0.1);
+  }
+  header h1 {
+    font-size: 20px;
+    color: #ffcc00;
+    margin: 0;
+  }
+  #userInfo {
+    font-size: 16px;
+    color: #fff;
+  }
+  #sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 220px;
+    height: calc(100% - 60px);
+    background: #252525;
+    padding-top: 20px;
+    transition: 0.3s;
+    overflow: auto;
+  }
+  #sidebar.hide { left: -220px; }
+  #sidebar a {
+    display: block;
+    color: #fff;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  #sidebar a:hover {
+    background: #ffcc00;
+    color: #000;
+  }
+  #toggleBtn {
+    background: none;
+    border: none;
+    color: #ffcc00;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  main {
+    margin-left: 220px;
+    padding: 20px;
+    transition: margin-left 0.3s;
+  }
+  main.full { margin-left: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <button id="toggleBtn">&#9776;</button>
+  <h1>Dashboard Rebel Nation Mode</h1>
+  <div id="userInfo">Bienvenue</div>
+</header>
+
+<div id="sidebar">
+  <a href="Clients_list.html">Clients List</a>
+  <a href="Orders_list.html">Orders List</a>
+  <a href="Products.html">Products</a>
+  <a href="Sales.html">Sales</a>
+  <a href="Stats.html">Stats</a>
+  <a href="Parametres.html">Parametres</a>
+  <a href="#" id="logout">Logout</a>
+</div>
+
+<main id="mainContent">
+  <h2>Bienvenue nan dashboard la!</h2>
+  <p>Chwazi yon opsyon nan meni sou bò gòch la.</p>
+</main>
+
+<script>
+  // Fè slide menu toggle
+  const toggleBtn = document.getElementById('toggleBtn');
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('mainContent');
+  toggleBtn.onclick = () => {
+    sidebar.classList.toggle('hide');
+    main.classList.toggle('full');
+  };
+
+  // Itilizatè konekte simulation
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  if(!currentUser){
+    alert("Ou dwe konekte anvan!");
+    window.location.href = "index.html";
+  } else {
+    document.getElementById("userInfo").textContent = `Bienvenue, ${currentUser.fullName} (${currentUser.role})`;
+  }
+
+  // Logout
+  document.getElementById("logout").onclick = () => {
+    localStorage.removeItem("currentUser");
+    window.location.href = "index.html";
+  };
+</script>
+
+</body>
+</html>
